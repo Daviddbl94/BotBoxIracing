@@ -818,14 +818,22 @@
   <div class="commands-inner">
     <div class="section-header">
       <div class="section-tag" data-es="Comandos" data-en="Commands"></div>
-      <h2 class="section-title" data-es="Lo que puede consultar tu chat" data-en="What your chat can ask"></h2>
+      <h2 class="section-title" data-es="Algunos datos que puede consultar tu chat" data-en="Some information your chat can access"></h2>
     </div>
     <div class="commands-grid">
+
+      <div class="cmd-card">
+        <span class="cmd-name" data-es="!ayuda" data-en="!help"></span>
+        <div class="cmd-info">
+          <div class="cmd-title" data-es="Lista de comandos" data-en="Command list"></div>
+          <div class="cmd-desc" data-es="Muestra todos los comandos disponibles en el chat" data-en="Shows all available commands in chat"></div>
+        </div>
+      </div>
       <div class="cmd-card">
         <span class="cmd-name" data-es="!combustible" data-en="!fuel"></span>
         <div class="cmd-info">
           <div class="cmd-title" data-es="Combustible restante" data-en="Remaining fuel"></div>
-          <div class="cmd-desc" data-es="Litros/kg restantes y vueltas estimadas" data-en="Remaining liters/kg and estimated laps"></div>
+          <div class="cmd-desc" data-es="Litros/Galones restantes y vueltas estimadas" data-en="Remaining liters/gallons and estimated laps"></div>
         </div>
       </div>
       <div class="cmd-card">
@@ -839,7 +847,7 @@
         <span class="cmd-name" data-es="!circuito" data-en="!circuit"></span>
         <div class="cmd-info">
           <div class="cmd-title" data-es="Nombre del circuito" data-en="Circuit name"></div>
-          <div class="cmd-desc" data-es="Circuito y configuración actuales" data-en="Current circuit and configuration"></div>
+          <div class="cmd-desc" data-es="Circuito actual" data-en="Current circuit"></div>
         </div>
       </div>
       <div class="cmd-card">
@@ -884,13 +892,39 @@
           <div class="cmd-desc" data-es="Estado térmico del motor" data-en="Engine thermal status"></div>
         </div>
       </div>
+      
       <div class="cmd-card">
-        <span class="cmd-name" data-es="!ayuda" data-en="!help"></span>
-        <div class="cmd-info">
-          <div class="cmd-title" data-es="Lista de comandos" data-en="Command list"></div>
-          <div class="cmd-desc" data-es="Muestra todos los comandos disponibles en el chat" data-en="Shows all available commands in chat"></div>
-        </div>
+      <span class="cmd-name" data-es="!lider" data-en="!leader"></span>
+      <div class="cmd-info">
+        <div class="cmd-title" data-es="Líder de la carrera" data-en="Race leader"></div>
+        <div class="cmd-desc" data-es="Información del líder" data-en="Leader information"></div>
       </div>
+      </div>
+
+    <div class="cmd-card">
+      <span class="cmd-name" data-es="!ritmo" data-en="!pace"></span>
+      <div class="cmd-info">
+        <div class="cmd-title" data-es="Ritmo de carrera" data-en="Race pace"></div>
+        <div class="cmd-desc" data-es="Ritmo del piloto" data-en="Driver's pace"></div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <span class="cmd-name" data-es="!vueltarapida" data-en="!fastestlap"></span>
+      <div class="cmd-info">
+        <div class="cmd-title" data-es="Vuelta rápida" data-en="Fastest lap"></div>
+        <div class="cmd-desc" data-es="Mejor vuelta de la sesión" data-en="Best lap of the session"></div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <span class="cmd-name" data-es="!top3" data-en="!top3"></span>
+      <div class="cmd-info">
+        <div class="cmd-title" data-es="Top 3 pilotos" data-en="Top 3 drivers"></div>
+        <div class="cmd-desc" data-es="Pilotos en las tres primeras posiciones" data-en="Drivers in the top three positions"></div>
+      </div>
+    </div>
+
     </div>
     <p style="margin-top: 24px; font-size: 13px; color: var(--muted);" 
        data-es="* Todos los comandos tienen alias en inglés: !fuel, !bestLapTime, !circuit, !airTemp, !trackTemp, !windInfo, !fogInfo, !oilInfo, !help"
