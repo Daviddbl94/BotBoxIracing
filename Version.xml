@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<update>
+<item>
   <version>1.1.1.4</version>
   <url>https://github.com/Daviddbl94/BotBoxIracing/releases/download/v1.1.1.4/BotBoxiRacing_Setup.exe</url>
-  <notes>Actualización de versión 1.1.1.4 con mejoras de estabilidad.</notes>
+  <changelog>https://github.com/Daviddbl94/BotBoxIracing/releases/tag/v1.1.1.4</changelog>
   <mandatory>false</mandatory>
-</update>
+</item>
