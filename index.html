@@ -131,7 +131,106 @@
     background: var(--border);
   }
 
-  
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 40px 80px;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .hero-glow-red {
+    position: absolute;
+    top: 20%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--glow2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-glow-blue {
+    position: absolute;
+    bottom: 10%;
+    left: -5%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 1100px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .hero-content {
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 30px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(36px, 5vw, 62px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+  }
+
+  .hero-title .line1 { color: var(--accent3); }
+  .hero-title .line2 { 
+    color: var(--accent);
+    text-shadow: 0 0 40px var(--glow);
+  }
+  .hero-title .line3 { 
+    color: var(--accent2);
+    font-size: 0.6em;
+    letter-spacing: 3px;
+    font-weight: 600;
+  }
+
+  .hero-desc {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #9090a8;
+    margin-bottom: 40px;
+    max-width: 440px;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
 
   .btn-primary {
     display: inline-flex;
@@ -637,6 +736,8 @@
 
 <!-- HERO -->
 <section class="hero">
+  <div class="hero-glow-red"></div>
+  <div class="hero-glow-blue"></div>
   <div class="hero-inner">
     <div class="hero-content">
       <div class="hero-eyebrow" data-es="Telemetría en directo" data-en="Live Telemetry"></div>
@@ -652,6 +753,14 @@
       <div class="hero-cta">
         <a href="#download" class="btn-primary" data-es="⬇ DESCARGAR GRATIS" data-en="⬇ FREE DOWNLOAD"></a>
         <a href="#commands" class="btn-secondary" data-es="VER COMANDOS" data-en="SEE COMMANDS"></a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="logo-container">
+        <div class="logo-ring"></div>
+        <div class="logo-ring2"></div>
+        <div class="logo-glow-bg"></div>
+        <img id="hero-logo-img" class="logo-img" src="" alt="Bot Box iRacing">
       </div>
     </div>
   </div>
