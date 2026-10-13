@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Bot Box iRacing: telemetría en directo e integración con Twitch."
+        data-es-content="Bot Box iRacing: telemetría en directo e integración con Twitch."
+        data-en-content="Bot Box iRacing: live telemetry and Twitch integration.">
+  <title data-es="BOT BOX iRACING | Bot para Twitch" data-en="BOT BOX iRACING | Twitch Bot">BOT BOX iRACING | Bot para Twitch</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    :root {
+      --bg: #06101f;
+      --panel: #101f35;
+      --panel-2: #0b192b;
+      --border: #294464;
+      --text: #f4f7ff;
+      --muted: #b5c9e5;
+      --blue: #3998ff;
+      --purple: #7545ff;
+      --green: #2de0ad;
+      --gutter: clamp(14px, 4vw, 20px);
+    }
+
+    * { box-sizing: border-box; }
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      line-height: 1.6;
+    }
+    img { max-width: 100%; height: auto; }
+    a { color: inherit; }
+    .container {
+      width: min(1120px, calc(100% - (var(--gutter) * 2)));
+      margin: 0 auto;
+    }
+    /* Respeta las zonas seguras (notch) en móviles */
+    @supports (padding: max(0px)) {
+      .container {
+        width: min(1120px, calc(100% - max(var(--gutter) * 2, env(safe-area-inset-left) + env(safe-area-inset-right) + var(--gutter))));
+      }
+    }
+
+    /* BLOQUE 1: LOGO */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 490px;
+      display: flex;
+      align-items: center;
+      background:
+        linear-gradient(90deg, rgba(4, 13, 27, .98) 0%, rgba(4, 13, 27, .88) 48%, rgba(4, 13, 27, .28) 100%),
+        url("images/hero-iracing.jpg") center 55% / cover no-repeat,
+        #0a1830;
+      border-bottom: 1px solid rgba(120, 160, 210, .15);
+    }
+    .hero > .container {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+    }
+
+    /* Selector de idioma */
+    .topbar {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: flex-end;
+      padding-top: max(16px, env(safe-area-inset-top, 0px));
+    }
+    .lang-switch {
+      display: inline-flex;
+      padding: 3px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(5, 16, 31, .72);
+    }
+    .lang-btn {
+      min-width: 48px;
+      min-height: 36px;
+      padding: 4px 14px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: .85rem;
+      font-weight: 800;
+      letter-spacing: .06em;
+      cursor: pointer;
+      transition: background .2s ease, color .2s ease;
+    }
+    .lang-btn[aria-pressed="true"] {
+      background: linear-gradient(110deg, #713eff, #8751ff);
+      color: #fff;
+    }
+    .lang-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+    @media (hover: hover) {
+      .lang-btn[aria-pressed="false"]:hover { color: #fff; }
+    }
+
+    .hero-content { padding: 30px 0 62px; max-width: 720px; min-width: 0; }
+    .hero-media { min-width: 0; }
+    .hero-media img { display: block; margin-left: 32px; }
+    .hero-media img[src=""], .hero-media img:not([src]) { display: none; }
+    .brand-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-bottom: 28px;
+      font-weight: 800;
+      letter-spacing: .04em;
+    }
+    .brand { display: inline-flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 42px;
+      border: 2px solid var(--blue);
+      border-radius: 10px;
+      color: var(--blue);
+      font-size: 1.35rem;
+    }
+    .brand-divider { width: 1px; height: 38px; background: #71829b; }
+    .iracing-word { font-style: italic; font-size: 1.2rem; }
+    .twitch-mark { color: #a98aff; font-size: 1.65rem; }
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2.1rem, 6vw + .5rem, 4rem);
+      line-height: 1.06;
+      letter-spacing: -.045em;
+      overflow-wrap: break-word;
+    }
+    .gradient-text {
+      color: #9b70ff;
+      background: linear-gradient(90deg, #6d4aff, #c06bff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p { max-width: 610px; margin: 0; color: #d8e4f5; font-size: clamp(1rem, 1.2vw + .75rem, 1.12rem); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 25px; }
+    .button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      min-height: 50px;
+      padding: 12px 22px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      text-decoration: none;
+      text-align: center;
+      font-weight: 800;
+      transition: transform .2s ease, filter .2s ease;
+    }
+    .button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+    .button-primary { background: linear-gradient(110deg, #713eff, #8751ff); color: white; }
+    .button-outline { border-color: var(--blue); background: rgba(5, 16, 31, .65); color: white; }
+
+    /* El efecto hover solo en dispositivos con ratón (evita "hover pegado" en táctiles) */
+    @media (hover: hover) {
+      .button:hover { transform: translateY(-2px); filter: brightness(1.12); }
+    }
+
+    /* BLOQUE 2: CARACTERÍSTICAS */
+    .features {
+      padding: clamp(32px, 5vw, 42px) 0 clamp(36px, 5vw, 48px);
+      background: linear-gradient(135deg, #12243d, #0d1b30);
+    }
+    .section-heading { text-align: center; margin: 0 auto 26px; }
+    .section-heading::before {
+      content: "";
+      display: block;
+      width: 44px;
+      height: 4px;
+      margin: 0 auto 12px;
+      border-radius: 5px;
+      background: var(--purple);
+    }
+    .section-heading h2 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.4rem); line-height: 1.2; }
+    .section-heading p { margin: 7px 0 0; color: #a9c8ed; font-size: clamp(1rem, 1vw + .8rem, 1.12rem); }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+    .feature-card {
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(6, 17, 32, .48);
+    }
+    .feature-icon {
+      display: grid;
+      place-items: center;
+      width: 60px;
+      height: 60px;
+      margin-bottom: 12px;
+      border: 3px solid var(--blue);
+      border-radius: 50%;
+      background: #17365a;
+      font-size: 1.7rem;
+    }
+    .feature-card:nth-child(2) .feature-icon { border-color: var(--purple); background: #30205b; }
+    .feature-card:nth-child(3) .feature-icon { border-color: var(--green); background: #12463f; }
+    .feature-card h3 { margin: 0 0 7px; font-size: 1.08rem; }
+    .feature-card p { margin: 0; color: var(--muted); }
+
+    /* BLOQUE 3: COMANDOS */
+    .commands { padding: clamp(32px, 5vw, 40px) 0 clamp(36px, 6vw, 54px); background: #071321; }
+    .commands .section-heading { margin-bottom: 25px; }
+    .commands-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .command-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      min-height: 118px;
+      padding: 15px;
+      border: 1px solid #263f5e;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #101f34, #091727);
+    }
+    .command-card > div { min-width: 0; }
+    .command-icon {
+      flex: 0 0 43px;
+      display: grid;
+      place-items: center;
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      background: #1a2b45;
+      font-size: 1.3rem;
+    }
+    .command-name {
+      display: block;
+      margin: -2px 0 2px;
+      color: #4b9aff;
+      font-weight: 800;
+      font-family: Consolas, "Courier New", monospace;
+      overflow-wrap: anywhere; /* evita desbordes con !longitudcircuito, !temperaturaaire... */
+    }
+    .command-title { margin: 0; font-weight: 700; }
+    .command-desc { margin: 2px 0 0; color: var(--muted); font-size: .9rem; line-height: 1.45; }
+    .aliases { margin-top: 18px; color: var(--muted); font-size: .86rem; overflow-wrap: anywhere; }
+    .aliases strong { color: #f4f7ff; }
+    .download-bottom { display: flex; justify-content: center; margin-top: 25px; }
+
+    footer {
+      padding: 20px;
+      padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      text-align: center;
+      color: #8096b4;
+      font-size: .85rem;
+      background: #050d18;
+    }
+
+    /* ============ RESPONSIVE ============ */
+
+    /* Pantallas grandes */
+    @media (min-width: 1400px) {
+      .container { width: min(1240px, calc(100% - 80px)); }
+    }
+
+    /* Portátiles pequeños / tablets en horizontal */
+    @media (max-width: 1024px) {
+      .hero { min-height: 440px; }
+      .hero-media img { max-width: 360px; margin-left: 24px; }
+      .feature-grid { gap: 16px; }
+      .feature-card { padding: 20px; }
+    }
+
+    /* Tablets */
+    @media (max-width: 850px) {
+      .hero { background-position: 62% center; }
+      .hero > .container { grid-template-columns: minmax(0, 1fr); }
+      .hero-media img { margin: 0 auto 40px; max-width: min(100%, 420px); }
+      .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .feature-card:last-child { grid-column: 1 / -1; }
+      .commands-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    /* Móviles */
+    @media (max-width: 640px) {
+      .feature-grid { grid-template-columns: 1fr; }
+      .feature-card:last-child { grid-column: auto; }
+    }
+
+    @media (max-width: 560px) {
+      .hero { min-height: auto; background-position: 65% center; }
+      .hero-content { padding: 22px 0 44px; }
+      .brand-row { gap: 10px; font-size: .82rem; margin-bottom: 22px; }
+      .brand-divider { height: 28px; }
+      .iracing-word { font-size: 1rem; }
+      .twitch-mark { font-size: 1.35rem; }
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .button { width: 100%; }
+      .commands-grid { grid-template-columns: 1fr; gap: 10px; }
+      .command-card { min-height: 0; padding: 14px; }
+      .download-bottom .button { width: 100%; }
+      .section-heading { margin-bottom: 20px; }
+    }
+
+    /* Móviles muy estrechos */
+    @media (max-width: 380px) {
+      .brand-row { font-size: .75rem; }
+      .feature-card { padding: 16px; }
+      .button { padding: 12px 16px; font-size: .95rem; }
+    }
+
+    /* Móvil en horizontal (poca altura) */
+    @media (max-height: 480px) and (orientation: landscape) {
+      .hero { min-height: auto; }
+      .hero-content { padding: 20px 0 32px; }
+    }
+
+    /* Accesibilidad: sin animaciones si el usuario lo pide */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .button, .lang-btn { transition: none; }
+      .button:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero" id="inicio">
+    <div class="container">
+
+      <!-- SELECTOR DE IDIOMA -->
+      <div class="topbar">
+        <div class="lang-switch" role="group" data-es-aria-label="Cambiar idioma" data-en-aria-label="Change language">
+          <button type="button" class="lang-btn" data-lang="es" lang="es" aria-pressed="true">ES</button>
+          <button type="button" class="lang-btn" data-lang="en" lang="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+
+      <div class="hero-content">
+        <div class="brand-row" data-es-aria-label="Bot Box iRacing, bot para Twitch" data-en-aria-label="Bot Box iRacing, Twitch bot">
+          <span class="brand"><span>BOT BOX IRACING</span></span>
+          <span class="brand-divider" aria-hidden="true"></span>
+          <span class="brand"><span class="twitch-mark">▣</span><span data-es="BOT PARA TWITCH" data-en="TWITCH BOT"></span></span>
+        </div>
+
+        <h1
+          data-es='Telemetría <span class="gradient-text">en directo</span>'
+          data-en='Live <span class="gradient-text">telemetry</span>'></h1>
+        <p
+          data-es="Conecta tu stream de iRacing con tu chat de Twitch. Tu comunidad puede consultar telemetría en tiempo real: combustible, tiempos, temperatura, circuito y más."
+          data-en="Connect your iRacing stream to your Twitch chat. Your community can check live telemetry: fuel, lap times, temperatures, track and more."></p>
+
+        <div class="hero-actions">
+          <a class="button button-primary" href="#download" data-es="⬇ DESCARGAR GRATIS" data-en="⬇ DOWNLOAD FREE"></a>
+          <a class="button button-outline" href="#commands" data-es="⌘ VER COMANDOS" data-en="⌘ VIEW COMMANDS"></a>
+        </div>
+      </div>
+      <div class="hero-media">
+        <img src="LogoIrChatBot.png" alt="" width="500" height="600">
+      </div>
+    </div>
+  </header>
+
+  <!-- BLOQUE 2: CARACTERÍSTICAS -->
+  <section class="features" id="caracteristicas">
+    <div class="container">
+      <div class="section-heading">
+        <h2 data-es="Características" data-en="Features"></h2>
+        <p
+          data-es="Todo lo que necesitas para tu pit lane digital"
+          data-en="Everything you need for your digital pit lane"></p>
+      </div>
+
+      <div class="feature-grid">
+        <article class="feature-card">
+          <h3 data-es="TELEMETRÍA EN VIVO" data-en="LIVE TELEMETRY"></h3>
+          <p
+            data-es="Lee datos directamente del SDK de iRacing. Combustible, tiempos de vuelta, temperatura de pista y del aire y más en tiempo real."
+            data-en="Reads data straight from the iRacing SDK. Fuel, lap times, track and air temperature and more, in real time."></p>
+        </article>
+        <article class="feature-card">
+          <h3 data-es="INTEGRACIÓN TWITCH" data-en="TWITCH INTEGRATION"></h3>
+          <p
+            data-es="Se conecta a tu canal con tu propia cuenta. Los espectadores hacen preguntas y el bot responde automáticamente."
+            data-en="Connects to your channel with your own account. Viewers ask questions and the bot answers automatically."></p>
+        </article>
+        <article class="feature-card">
+          <h3 data-es="BILINGÜE ES/EN" data-en="BILINGUAL ES/EN"></h3>
+          <p
+            data-es="Todos los comandos funcionan en español e inglés. Configura el idioma de respuesta desde la app."
+            data-en="All commands work in both Spanish and English. Set the reply language from the app."></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOQUE 3: COMANDOS. -->
+  <section class="commands" id="commands">
+    <div class="container">
+      <div class="section-heading">
+        <h2 data-es="Comandos" data-en="Commands"></h2>
+        <p
+          data-es="Algunos datos que puede consultar tu chat"
+          data-en="Some of the data your chat can ask for"></p>
+      </div>
+
+      <!-- Cada texto lleva sus dos idiomas juntos: data-es="..." data-en="..." -->
+      <div class="commands-grid">
+        <article class="command-card">
+          <div><span class="command-name" data-es="!ayuda" data-en="!help"></span><p class="command-title" data-es="Lista de comandos" data-en="Command list"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!combustible" data-en="!fuel"></span><p class="command-title" data-es="Combustible restante" data-en="Fuel remaining"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!mejortiempo" data-en="!bestLapTime"></span><p class="command-title" data-es="Mejor vuelta" data-en="Best lap"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!circuito" data-en="!circuit"></span><p class="command-title" data-es="Nombre del circuito" data-en="Track name"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!longitudcircuito" data-en="!circuitlength"></span><p class="command-title" data-es="Longitud del trazado" data-en="Track length"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!temperaturaaire" data-en="!airTemp"></span><p class="command-title" data-es="Temperatura del aire" data-en="Air temperature"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!temperaturapista" data-en="!trackTemp"></span><p class="command-title" data-es="Temperatura de pista" data-en="Track temperature"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!viento" data-en="!windInfo"></span><p class="command-title" data-es="Información del viento" data-en="Wind information"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!niebla" data-en="!fogInfo"></span><p class="command-title" data-es="Niebla / visibilidad" data-en="Fog / visibility"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!aceite" data-en="!oilInfo"></span><p class="command-title" data-es="Temperatura del aceite" data-en="Oil temperature"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!lider" data-en="!leader"></span><p class="command-title" data-es="Líder de la carrera" data-en="Race leader"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!ritmo" data-en="!pace"></span><p class="command-title" data-es="Ritmo de carrera" data-en="Race pace"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!vueltarapida" data-en="!fastestlap"></span><p class="command-title" data-es="Vuelta rápida" data-en="Fastest lap"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!top3" data-en="!top3"></span><p class="command-title" data-es="Top 3 pilotos" data-en="Top 3 drivers"></p></div>
+        </article>
+        <article class="command-card">
+          <div><span class="command-name" data-es="!sof" data-en="!sof"></span><p class="command-title" data-es="sof del split" data-en="Split SOF"></p></div>
+        </article>
+      </div>
+      <div class="aliases"><strong data-es="Alias en inglés" data-en="Spanish aliases"></strong><br><span
+        data-es="!help, !fuel, !bestLapTime, !circuit, !circuitlength, !airTemp, !trackTemp, !windInfo, !fogInfo, !oilInfo, !leader, !pace, !fastestlap"
+        data-en="!ayuda, !combustible, !mejortiempo, !circuito, !longitudcircuito, !temperaturaaire, !temperaturapista, !viento, !niebla, !aceite, !lider, !ritmo, !vueltarapida"></span></div>
+
+      <!-- BOTÓN FINAL DE DESCARGA -->
+      <div class="download-bottom" id="download">
+        <a class="button button-primary" href="https://github.com/Daviddbl94/BotBoxIracing/releases/download/v1.0.5/BotBoxiRacing_Setup.exe" data-es="⬇ DESCARGAR LA APP" data-en="⬇ DOWNLOAD THE APP"></a>
+      </div>
+    </div>
+  </section>
+
+  <footer
+    data-es="BOT BOX iRACING · Bot para Twitch"
+    data-en="BOT BOX iRACING · Twitch bot"></footer>
+
+  <script>
+    (function () {
+      var STORAGE_KEY = "botbox-lang";
+      var LANGS = ["es", "en"];               // para añadir un idioma: ponlo aquí, añade su botón y sus data-xx
+      var DEFAULT = "es";
+      var ATTRS = ["aria-label", "content"];  // atributos traducibles: data-es-aria-label / data-en-aria-label ...
+
+      var textEls = document.querySelectorAll("[data-es]");
+
+      function getStored() {
+        try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
+      }
+      function setStored(lang) {
+        try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) { /* sin almacenamiento: no pasa nada */ }
+      }
+      function initialLang() {
+        var fromUrl = null;
+        try { fromUrl = new URLSearchParams(location.search).get("lang"); } catch (e) {}
+        if (LANGS.indexOf(fromUrl) > -1) return fromUrl;
+        var saved = getStored();
+        if (LANGS.indexOf(saved) > -1) return saved;
+        var nav = (navigator.language || DEFAULT).slice(0, 2).toLowerCase();
+        return LANGS.indexOf(nav) > -1 ? nav : DEFAULT;
+      }
+
+      function applyLang(lang) {
+        document.documentElement.lang = lang;
+
+        // Textos: si falta la traducción, se usa el español
+        textEls.forEach(function (el) {
+          var v = el.dataset[lang];
+          el.innerHTML = v !== undefined ? v : el.dataset[DEFAULT];
+        });
+
+        // Atributos
+        ATTRS.forEach(function (attr) {
+          document.querySelectorAll("[data-" + DEFAULT + "-" + attr + "]").forEach(function (el) {
+            var v = el.getAttribute("data-" + lang + "-" + attr);
+            el.setAttribute(attr, v !== null ? v : el.getAttribute("data-" + DEFAULT + "-" + attr));
+          });
+        });
+
+        document.querySelectorAll(".lang-btn").forEach(function (btn) {
+          btn.setAttribute("aria-pressed", String(btn.dataset.lang === lang));
+        });
+      }
+
+      document.querySelectorAll(".lang-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          setStored(btn.dataset.lang);
+          applyLang(btn.dataset.lang);
+        });
+      });
+
+      applyLang(initialLang());
+    })();
+  </script>
+</body>
+</html>
